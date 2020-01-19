@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>	
 #include <stdlib.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>	
+#include <ctype.h>	
 #include <unistd.h>
-#include <ctype.h>
-
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/epoll.h>
+#include <errno.h>
 
 #define html "text/html"
 #define mp3 "audio/mpeg"
@@ -15,7 +16,7 @@
 #define png "image/png"
 #define txt "text/plain"
 
-int port = 4200;
+int port = 8080;
 char *mime_type;
 
 
@@ -47,8 +48,8 @@ void send_file(int fd, char *file_name){
         if (fseek(file, 0L, SEEK_END) == 0) {
             bufsize = ftell(file);
             if(bufsize > 10000000){
-                char *data = "Size limit exceeds...";
-                send_res(fd, "HTTP/1.1 500 Internal Server Error", data, strlen(data));
+                char *data = "Size limit exceeds";
+                send_res(fd, "HTTP/1.1 500 Internal Server Error Occured...", data, strlen(data));
                 return;
             }
             source = malloc(sizeof(char) * (bufsize + 1));
@@ -60,7 +61,7 @@ void send_file(int fd, char *file_name){
         fclose(file);
     }else{
 
-        char *error = "file not found";
+        char *error = "File not found";
         mime_type = html;
         send_res(fd, "HTTP/1.1 404 NOT FOUND", error, strlen(error));
     }
@@ -73,14 +74,15 @@ int main(int argc , char *argv[])
         char *next;
         int port_number = strtol (argv[1], &next, 10);
         if ((next == argv[1]) || (*next != '\0')) {
-            port = 4200;
+            port = 8080;
         } else {
             port = port_number;
         }
     } 
 
-	int server_fd, client_fd;
-	struct sockaddr_in server;
+	int server_fd;
+    int client_fd;
+	struct sockaddr_in server_addr;
     char buffer[1024] = {0}; 
     char requestType[4];       
     char requestpath[1024];    
@@ -92,11 +94,11 @@ int main(int argc , char *argv[])
         return -1;
 	}
 		
-	server.sin_addr.s_addr = INADDR_ANY;
-	server.sin_family = AF_INET;
-	server.sin_port = htons(port);
+	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(port);
 
-	if(bind(server_fd, (struct sockaddr *)&server , sizeof(server)) == -1){
+	if(bind(server_fd, (struct sockaddr *)&server_addr , sizeof(server_addr)) == -1){
         perror("bind fail");
         return -1;
     }
@@ -109,7 +111,7 @@ int main(int argc , char *argv[])
     printf("Server is listening on port %d\n\n", port);
     while (1){
         
-        if((client_fd = accept(server_fd, (struct sockaddr*)&server,(socklen_t*)&server)) == -1){
+        if((client_fd = accept(server_fd, (struct sockaddr*)&server_addr,(socklen_t*)&server_addr)) == -1){
             perror("Accept fail");
             return -1;
         }  
