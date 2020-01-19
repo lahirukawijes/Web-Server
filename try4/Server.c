@@ -45,7 +45,7 @@ int server_listen(server_t* server){
 	}
 }
 
-char* get_file_path(char* url){ //Get the correct path of the requested file in the server
+char* get_file_path(char* url){ //Getting the path of the requested file in the server
 	if(strcmp(url,"/") == 0 || strcmp(url,"/home.html") == 0 || strcmp(url,"") == 0){
 		return "html/home.html";
 	}
