@@ -135,7 +135,7 @@ int main(int argc , char *argv[])
             mime_type = NULL;
 
         if (!strcmp(requestType, "GET") && !strcmp(requestpath, "/")) {
-            char *data = "hello get request";
+            char *data = "Please insert get request";
             mime_type = html;
             send_responce(client_fd, "HTTP/1.1 200 OK", data, strlen(data));
         }else if (!strcmp(requestType, "POST") && !strcmp(requestpath, "/")) {
