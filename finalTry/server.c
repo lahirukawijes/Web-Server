@@ -99,38 +99,38 @@ int server_listen(server_t* server){
 }
 
 char* get_file_path(char* url){ //Get the correct path of the requested file in the server
-	// if(strcmp(url,"/") == 0 || strcmp(url,"/home.html") == 0 || strcmp(url,"") == 0){
-	// 	return "html/home.html";
-	// }
-	// else if(strcmp(url,"/a.html") == 0 ){
-	// 	return "html/a.html";
-	// }
-	// else if(strcmp(url,"/b.html") == 0 ){
-	// 	return "html/b.html";
-	// }
-	// else if(strcmp(url,"/c.html") == 0 ){
-	// 	return "html/c.html";
-	// }
-	// return "html/404.html";
+	if(strcmp(url,"/") == 0 || strcmp(url,"/home.html") == 0 || strcmp(url,"") == 0){
+		return "html/home.html";
+	}
+	else if(strcmp(url,"/a.html") == 0 ){
+		return "html/a.html";
+	}
+	else if(strcmp(url,"/b.html") == 0 ){
+		return "html/b.html";
+	}
+	else if(strcmp(url,"/c.html") == 0 ){
+		return "html/c.html";
+	}
+	return "html/404.html";
 
-	char buffer[1024] = {0};
-	char reqType[4];
-	char  reqpath[1024];
+	// char buffer[1024] = {0};
+	// char reqType[4];
+	// char  reqpath[1024];
 
-	sscanf(buffer, "%s %s", reqType, reqpath);
-        printf("Request Type %s \n", buffer); 
+	// sscanf(buffer, "%s %s", reqType, reqpath);
+    //     printf("Request Type %s \n", buffer); 
 	
         
-        for(int i = 0; i < 100; i++)
-            reqpath[i] = tolower(reqpath[i]);
+    //     for(int i = 0; i < 100; i++)
+    //         reqpath[i] = tolower(reqpath[i]);
         
-        char *mime = strrchr(reqpath, '.')+1;
-        char *name = strtok(reqpath, "/");
+    //     char *mime = strrchr(reqpath, '.')+1;
+    //     char *name = strtok(reqpath, "/");
         
-        if(mime)
-            mime_type = mime;
-        else
-            mime_type = NULL;
+    //     if(mime)
+    //         mime_type = mime;
+    //     else
+    //         mime_type = NULL;
 
 }
 
