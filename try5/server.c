@@ -16,7 +16,7 @@
 #define png "image/png"
 #define txt "text/plain"
 
-int port = 8080;
+#define HSTATIC_PORT 8080
 char *mime_type;
 
 
@@ -70,19 +70,19 @@ void send_file(int fd, char *file_name){
 
 int main(int argc , char *argv[])
 {
-    if(argc>=2) { 
-        char *next;
-        int port_number = strtol (argv[1], &next, 10);
-        if ((next == argv[1]) || (*next != '\0')) {
-            port = 8080;
-        } else {
-            port = port_number;
-        }
-    } 
+    // if(argc>=2) { 
+    //     char *next;
+    //     int port_number = strtol (argv[1], &next, 10);
+    //     if ((next == argv[1]) || (*next != '\0')) {
+    //         port = 8080;
+    //     } else {
+    //         port = port_number;
+    //     }
+    // } 
 
 	int server_fd;
-    int client_fd;
-	struct sockaddr_in server_addr;
+    
+	
     char buffer[1024] = {0}; 
     char requestType[4];       
     char requestpath[1024];    
@@ -90,13 +90,14 @@ int main(int argc , char *argv[])
 	
 	server_fd = socket(AF_INET , SOCK_STREAM , 0);
 	if (server_fd == -1){
-		perror("not create socket");
+		perror("socket not created");
         return -1;
 	}
-		
-	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	struct sockaddr_in server_addr;	
+	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(port);
+	server_addr.sin_port = htons(HSTATIC_PORT);
 
 	if(bind(server_fd, (struct sockaddr *)&server_addr , sizeof(server_addr)) == -1){
         perror("bind fail");
@@ -108,7 +109,9 @@ int main(int argc , char *argv[])
         return -1;
     }
 
-    printf("Server is listening on port %d\n\n", port);
+    printf("Server is listening on port %d\n\n", HSTATIC_PORT);
+
+    int client_fd;
     while (1){
         
         if((client_fd = accept(server_fd, (struct sockaddr*)&server_addr,(socklen_t*)&server_addr)) == -1){
@@ -140,10 +143,10 @@ int main(int argc , char *argv[])
             char *data = "Please insert get request";
             mime_type = html;
             send_res(client_fd, "HTTP/1.1 200 OK", data, strlen(data));
-        }else if (!strcmp(requestType, "POST") && !strcmp(requestpath, "/")) {
-            char *data = "hello post request";
-            mime_type = html;
-            send_res(client_fd, "HTTP/1.1 200 OK", data, strlen(data));
+        // }else if (!strcmp(requestType, "POST") && !strcmp(requestpath, "/")) {
+        //     char *data = "This is post request";
+        //     mime_type = html;
+        //     send_res(client_fd, "HTTP/1.1 200 OK", data, strlen(data));
         }else{
             send_file(client_fd,name);
         }  
